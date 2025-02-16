@@ -1,5 +1,8 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
+
 from .models import Room,Topic
+from django.contrib.auth.models import User
 from.forms import RoomForm
 from django.db.models import Q 
 
@@ -11,6 +14,20 @@ from django.db.models import Q
     #{'id':2, 'name': 'design with me'},
    # {'id':3, 'name': 'Frontend developers'},
 #]
+
+def LoginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        try:
+            user = User.objects.get(username=username)
+        except:
+            messages.error(request, 'User does not exist')
+
+
+    context = {}
+    return render(request, 'base/login_register.html',context)
 
 def home(request):
     q= request.GET.get('q') if request.GET.get('q') != None else ''
@@ -29,7 +46,7 @@ def home(request):
 def room(request, pk):
     room = Room.objects.get(id=pk)
     
-    context = {'room': room, 'topic': room.topic}
+    context = {'rooms': rooms, 'topic': room.topic}
     return render(request, 'base/room.html', context)
 
 def createRoom(request):
